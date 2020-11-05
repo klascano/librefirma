@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ec.gob.firmadigital.firmador;
+package com.github.klascano.librefirma.firmador;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -54,17 +54,18 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import ec.gob.firmadigital.cliente.FirmaDigital;
-import ec.gob.firmadigital.exceptions.DocumentoNoExistenteException;
-import ec.gob.firmadigital.exceptions.DocumentoNoPermitidoException;
-import ec.gob.firmadigital.exceptions.RazonFirma;
-import ec.gob.firmadigital.exceptions.TokenNoConectadoException;
-import ec.gob.firmadigital.exceptions.TokenNoEncontradoException;
-import ec.gob.firmadigital.firmador.update.Update;
-import ec.gob.firmadigital.utils.Log;
-import ec.gob.firmadigital.utils.PropertiesUtils;
-import ec.gob.firmadigital.utils.SwingLink;
-import ec.gob.firmadigital.utils.WordWrapCellRenderer;
+import com.github.klascano.librefirma.cliente.FirmaDigital;
+import com.github.klascano.librefirma.exceptions.DocumentoNoExistenteException;
+import com.github.klascano.librefirma.exceptions.DocumentoNoPermitidoException;
+import com.github.klascano.librefirma.exceptions.RazonFirma;
+import com.github.klascano.librefirma.exceptions.TokenNoConectadoException;
+import com.github.klascano.librefirma.exceptions.TokenNoEncontradoException;
+import com.github.klascano.librefirma.firmador.update.Update;
+import com.github.klascano.librefirma.utils.Log;
+import com.github.klascano.librefirma.utils.PropertiesUtils;
+import com.github.klascano.librefirma.utils.SwingLink;
+import com.github.klascano.librefirma.utils.WordWrapCellRenderer;
+
 import io.rubrica.certificate.CertEcUtils;
 import io.rubrica.certificate.CertUtils;
 import io.rubrica.certificate.Certificado;
@@ -229,25 +230,25 @@ public class Main extends javax.swing.JFrame {
 		extensionesDocumentos = new java.util.ArrayList<>(Arrays.asList(filtroDocumentos.getExtensions()));
 		// FIRMAR DOCUMENTO
 		jtxtFirmarRuta.setTransferHandler(
-				new ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent(extensionesCertificados));
+				new com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent(extensionesCertificados));
 		// VERIFICAR DOCUMENTO
 		jtxtVerificarRuta.setTransferHandler(
-				new ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent(extensionesDocumentos));
+				new com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent(extensionesDocumentos));
 		// VALIDAR CERTIFICADO DE FIRMA ELECTRÓNICA
 		jtxtValidarRuta.setTransferHandler(
-				new ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent(extensionesCertificados));
+				new com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent(extensionesCertificados));
 		// VALIDAR DOCUMENTOS
 		jScrollPaneFirmarDocumentos
-				.setTransferHandler(new ec.gob.firmadigital.utils.TableTransferHandlerComponent(extensionesDocumentos));
+				.setTransferHandler(new com.github.klascano.librefirma.utils.TableTransferHandlerComponent(extensionesDocumentos));
 		// DRAG & DROP
 		if (!OsUtils.isMac()) {
-			ec.gob.firmadigital.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos, jplDocumentos,
+			com.github.klascano.librefirma.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos, jplDocumentos,
 					"documento(s)");
-			ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtFirmarRuta,
+			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtFirmarRuta,
 					jplCertificadoFirmar, "certificado digital");
-			ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtVerificarRuta,
+			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtVerificarRuta,
 					jplDocumentoVerificar, "documento firmado");
-			ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtValidarRuta,
+			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtValidarRuta,
 					jplCertificadoValidar, "certificado digital");
 		}
 	}
@@ -263,13 +264,13 @@ public class Main extends javax.swing.JFrame {
 		jScrollPaneFirmarDocumentos.setTransferHandler(null);
 		// DRAG & DROP
 		if (!OsUtils.isMac()) {
-			ec.gob.firmadigital.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos, jplDocumentos,
+			com.github.klascano.librefirma.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos, jplDocumentos,
 					"documento(s)");
-			ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtFirmarRuta,
+			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtFirmarRuta,
 					jplCertificadoFirmar, "certificado digital");
-			ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtVerificarRuta,
+			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtVerificarRuta,
 					jplDocumentoVerificar, "documento firmado");
-			ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtValidarRuta,
+			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtValidarRuta,
 					jplCertificadoValidar, "certificado digital");
 		}
 	}

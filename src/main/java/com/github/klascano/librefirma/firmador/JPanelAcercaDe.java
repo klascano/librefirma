@@ -12,9 +12,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ec.gob.firmadigital.firmador;
+package com.github.klascano.librefirma.firmador;
 
-import ec.gob.firmadigital.utils.PropertiesUtils;
 import io.rubrica.utils.FileUtils;
 import java.awt.Desktop;
 import java.awt.event.MouseAdapter;
@@ -25,6 +24,8 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.github.klascano.librefirma.utils.PropertiesUtils;
 
 /**
  *

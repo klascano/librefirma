@@ -12,12 +12,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ec.gob.firmadigital.cliente;
+package com.github.klascano.librefirma.cliente;
 
+import com.github.klascano.librefirma.utils.PropertiesUtils;
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.exceptions.BadPasswordException;
 import com.lowagie.text.exceptions.InvalidPdfException;
-import ec.gob.firmadigital.utils.PropertiesUtils;
+
 import io.rubrica.utils.FileUtils;
 import io.rubrica.utils.TiempoUtils;
 import java.io.File;

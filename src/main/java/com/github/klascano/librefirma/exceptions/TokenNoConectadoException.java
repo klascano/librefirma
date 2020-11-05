@@ -12,17 +12,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ec.gob.firmadigital.exceptions;
+package com.github.klascano.librefirma.exceptions;
 
 /**
  *
  * @author jdc
  */
-public class DocumentoNoExistenteException extends Exception {
+public class TokenNoConectadoException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public DocumentoNoExistenteException(String msg) {
+    public TokenNoConectadoException(String msg) {
         super(msg);
     }
 }

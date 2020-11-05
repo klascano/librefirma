@@ -12,9 +12,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ec.gob.firmadigital.utils;
+package com.github.klascano.librefirma.utils;
 
-import ec.gob.firmadigital.firmador.Main;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -24,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.github.klascano.librefirma.firmador.Main;
 
 /**
  *

@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.gob.firmadigital.firmador;
+package com.github.klascano.librefirma.firmador;
 
-import ec.gob.firmadigital.utils.WordWrapCellRenderer;
 import io.rubrica.utils.FileUtils;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +17,8 @@ import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+
+import com.github.klascano.librefirma.utils.WordWrapCellRenderer;
 
 /**
  *

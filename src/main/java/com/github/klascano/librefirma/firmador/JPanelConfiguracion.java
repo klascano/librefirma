@@ -12,19 +12,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ec.gob.firmadigital.firmador;
+package com.github.klascano.librefirma.firmador;
 
 import io.rubrica.utils.FileUtils;
-import ec.gob.firmadigital.utils.PropertiesUtils;
-import ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent;
-import static ec.gob.firmadigital.utils.TextFieldTransferHandlerComponent.iconInformation;
 import io.rubrica.utils.OsUtils;
+
+import static com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation;
+
 import java.util.Arrays;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.github.klascano.librefirma.utils.PropertiesUtils;
+import com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent;
 
 /**
  *

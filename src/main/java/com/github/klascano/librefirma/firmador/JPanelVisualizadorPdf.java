@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ec.gob.firmadigital.firmador;
+package com.github.klascano.librefirma.firmador;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -152,7 +152,7 @@ public final class JPanelVisualizadorPdf extends javax.swing.JPanel {
             @Override
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 if (jtxRazonFirma.getText().length() < longitudRazon) {
-                    ec.gob.firmadigital.utils.Presionar.presionarAlfanumericoEspacio(evt);
+                    com.github.klascano.librefirma.utils.Presionar.presionarAlfanumericoEspacio(evt);
                 } else {
                     evt.consume();
                 }
