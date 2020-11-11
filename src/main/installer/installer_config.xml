@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<installation version="5.0">
+    <info>
+        <appname>Librefirma</appname>
+        <appversion>1.0.0</appversion>
+        <authors>
+            <author email="kleverlascano@gmail.com" name="Klever Lascano"/>
+        </authors>
+        <url>https://github.com/klascano</url>
+        <uninstaller name="Uninstaller.jar" write="yes"/>        
+        <requiresjdk>no</requiresjdk>
+        <writeinstallationinformation>yes</writeinstallationinformation>
+        <run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7"/>
+    </info>
+    <guiprefs height="400" resizable="no" width="600">
+        <modifier key="useFlags" value="yes"/>
+        <modifier key="langDisplayType" value="default"/>
+    </guiprefs>
+    <locale>
+        <langpack iso3="spa"/>
+    </locale>
+    <resources>
+        <res id="LicencePanel.licence" parse="yes" src="licencia.txt"/>
+        <res id="shortcutSpec.xml" src="installer_config_shortcutSpec.xml"/>      
+        <res id="installer.langsel.img" src="librefirma.png"/>
+        <res id="Installer.image" src="lateral.png"/>
+    </resources>
+    <panels>
+        <panel classname="CheckedHelloPanel"/>
+        <panel classname="LicencePanel"/>
+        <panel classname="TargetPanel"/>
+        <panel classname="InstallPanel"/>
+        <panel classname="ShortcutPanel"/>
+        <panel classname="SimpleFinishPanel"/>
+    </panels>
+    <variables>
+        <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
+    </variables>
+    <packs>
+        <pack name="librefirma" preselected="yes" required="yes">
+            <description>Archivos necesarios para instalacion de librefirma</description>
+            <file override="update" src="@RUTA_BINARIOS@" targetdir="$INSTALL_PATH/"/>
+            <executable failure="abort" keep="false" stage="never" targetfile="$INSTALL_PATH/librefirma/bin/librefirma">
+                <os family="Unix"/>
+            </executable>
+            <executable failure="abort" keep="false" stage="never" targetfile="$INSTALL_PATH/librefirma/bin/librefirma.bat">
+                <os family="Windows"/>
+            </executable>
+        </pack>
+    </packs>
+    <natives> 
+        <native type="izpack" name="ShellLink.dll"/> 
+        <native type="izpack" name="ShellLink_x64.dll"/> 
+        <native type="izpack" name="WinSetupAPI.dll"/> 
+        <native type="izpack" name="WinSetupAPI_x64.dll"/> 
+        <native type="3rdparty" name="COIOSHelper.dll" stage="both"/> 
+        <native type="3rdparty" name="COIOSHelper_x64.dll" stage="both"/> 
+    </natives> 
+</installation>

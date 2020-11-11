@@ -17,15 +17,15 @@ import java.util.logging.SimpleFormatter;
  */
 public class Log {
 
-    private static final String LOG_FILE_PATTERN = "%h/firmadigital.log";
+	private static final String LOG_FILE_PATTERN = "bitacora.log";
 
-    public static void initLogging() {
-        try {
-            Handler handler = new FileHandler(LOG_FILE_PATTERN, 0, 1, true);
-            handler.setFormatter(new SimpleFormatter());
-            Logger.getLogger("").addHandler(handler);
-        } catch (IOException e) {
-            System.out.println("Error al inicializar el logging: " + e.getMessage());
-        }
-    }
+	public static void initLogging() {
+		try {
+			Handler handler = new FileHandler(LOG_FILE_PATTERN, 0, 1, true);
+			handler.setFormatter(new SimpleFormatter());
+			Logger.getLogger("").addHandler(handler);
+		} catch (IOException e) {
+			System.out.println("Error al inicializar el logging: " + e.getMessage());
+		}
+	}
 }

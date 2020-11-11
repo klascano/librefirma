@@ -14,6 +14,7 @@
  */
 package com.github.klascano.librefirma.firmador;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -23,6 +24,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.NoSuchFileException;
@@ -41,11 +43,13 @@ import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.ProgressMonitor;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
@@ -82,6 +86,9 @@ import io.rubrica.utils.FileUtils;
 import io.rubrica.utils.OsUtils;
 import io.rubrica.utils.Utils;
 import io.rubrica.utils.X509CertificateUtils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
 import uriSchemeHandler.CouldNotRegisterUriSchemeHandler;
 import uriSchemeHandler.URISchemeHandler;
 
@@ -103,11 +110,29 @@ public class Main extends javax.swing.JFrame {
 	private int pagina;
 	private java.util.List<String> extensionesCertificados;
 	private java.util.List<String> extensionesDocumentos;
-	private final FileNameExtensionFilter filtroDocumentos = new FileNameExtensionFilter("Documentos de Oficina", "pdf",
-			"p7m", "odt", "ods", "odp", "xml");
-//    private final FileNameExtensionFilter filtroDocumentos = new FileNameExtensionFilter("Documentos de Oficina", "pdf", "p7m", "docx", "xlsx", "pptx", "odt", "ods", "odp", "xml");
-	private final FileNameExtensionFilter filtroCertificados = new FileNameExtensionFilter("Certificado Digital", "pfx",
-			"p12");
+	private final FileNameExtensionFilter filtroDocumentosOld = new FileNameExtensionFilter("Documentos de Oficina",
+			"pdf", "p7m", "odt", "ods", "odp", "xml");
+
+	private final FilenameFilter filtroDocumentos = new FilenameFilter() {
+		@Override
+		public boolean accept(File dir, String name) {
+			return false || name.toLowerCase().endsWith(".pdf") || name.toLowerCase().endsWith(".p7m")
+					|| name.toLowerCase().endsWith(".odt") || name.toLowerCase().endsWith(".odp")
+					|| name.toLowerCase().endsWith(".xml");
+		}
+	};
+
+	private final FileNameExtensionFilter filtroCertificadosOld = new FileNameExtensionFilter("p12", "cer", "pfx",
+			"crt");
+
+	private final FilenameFilter filtroCertificados = new FilenameFilter() {
+		@Override
+		public boolean accept(File dir, String name) {
+			return false || name.toLowerCase().endsWith(".p12") || name.toLowerCase().endsWith(".pfx")
+					|| name.toLowerCase().endsWith(".cer") || name.toLowerCase().endsWith(".crt");
+		}
+	};
+
 	private static final String OS = System.getProperty("os.name").toLowerCase();
 	X509CertificateUtils x509CertificateUtils = null;
 
@@ -119,6 +144,8 @@ public class Main extends javax.swing.JFrame {
 	private final JButton btnSi = new JButton();
 	private final JButton btnNo = new JButton();
 	private final JButton btnAceptar = new JButton();
+
+	static Color color = new Color(21, 127, 204);
 
 	/**
 	 * Creates new form Main
@@ -207,8 +234,7 @@ public class Main extends javax.swing.JFrame {
 			}
 		});
 		jtblFirmarDocumentos.getModel().addTableModelListener((TableModelEvent evt) -> {
-			jlblDocumentosFirmar.setText(
-					"<html><b>" + tableModelDocumentos.getRowCount() + " DOCUMENTO(S) SELECCIONADO(S)</b></html>");
+			jlblDocumentosFirmar.setText("" + tableModelDocumentos.getRowCount() + " DOCUMENTO(S) SELECCIONADO(S)");
 		});
 	}
 
@@ -226,8 +252,9 @@ public class Main extends javax.swing.JFrame {
 
 	private void dragAndDrop() {
 		// DRAG & DROP
-		extensionesCertificados = new java.util.ArrayList<>(Arrays.asList(filtroCertificados.getExtensions()));
-		extensionesDocumentos = new java.util.ArrayList<>(Arrays.asList(filtroDocumentos.getExtensions()));
+
+		extensionesCertificados = new java.util.ArrayList<>(Arrays.asList(filtroCertificadosOld.getExtensions()));
+		extensionesDocumentos = new java.util.ArrayList<>(Arrays.asList(filtroDocumentosOld.getExtensions()));
 		// FIRMAR DOCUMENTO
 		jtxtFirmarRuta.setTransferHandler(
 				new com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent(extensionesCertificados));
@@ -238,12 +265,12 @@ public class Main extends javax.swing.JFrame {
 		jtxtValidarRuta.setTransferHandler(
 				new com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent(extensionesCertificados));
 		// VALIDAR DOCUMENTOS
-		jScrollPaneFirmarDocumentos
-				.setTransferHandler(new com.github.klascano.librefirma.utils.TableTransferHandlerComponent(extensionesDocumentos));
+		jScrollPaneFirmarDocumentos.setTransferHandler(
+				new com.github.klascano.librefirma.utils.TableTransferHandlerComponent(extensionesDocumentos));
 		// DRAG & DROP
 		if (!OsUtils.isMac()) {
-			com.github.klascano.librefirma.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos, jplDocumentos,
-					"documento(s)");
+			com.github.klascano.librefirma.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos,
+					jplDocumentos, "documento(s)");
 			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtFirmarRuta,
 					jplCertificadoFirmar, "certificado digital");
 			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtVerificarRuta,
@@ -264,8 +291,8 @@ public class Main extends javax.swing.JFrame {
 		jScrollPaneFirmarDocumentos.setTransferHandler(null);
 		// DRAG & DROP
 		if (!OsUtils.isMac()) {
-			com.github.klascano.librefirma.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos, jplDocumentos,
-					"documento(s)");
+			com.github.klascano.librefirma.utils.TableTransferHandlerComponent.iconInformation(jtblFirmarDocumentos,
+					jplDocumentos, "documento(s)");
 			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtFirmarRuta,
 					jplCertificadoFirmar, "certificado digital");
 			com.github.klascano.librefirma.utils.TextFieldTransferHandlerComponent.iconInformation(jtxtVerificarRuta,
@@ -571,8 +598,8 @@ public class Main extends javax.swing.JFrame {
 									i++;
 									File documento = new File(rutaDocumento);
 									// updating ProgressMonitor note
-									pm.setNote("<html><b>" + i + " de " + rutaDocumentos.size() + " documento(s)</b>"
-											+ "<br>" + documento.toString() + "</html>");
+									pm.setNote("" + i + " de " + rutaDocumentos.size() + " documento(s)" + "<br>"
+											+ documento.toString() + "");
 									// updating ProgressMonitor progress
 									pm.setProgress(i);
 									if (pm.isCanceled()) {
@@ -909,6 +936,9 @@ public class Main extends javax.swing.JFrame {
 	// Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
+		IconFontSwing.register(FontAwesome.getIconFont());
+		IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
+
 		tipoFirmaBtnGRP = new javax.swing.ButtonGroup();
 		bgDocumentos = new javax.swing.ButtonGroup();
 		jScrollPane1 = new javax.swing.JScrollPane();
@@ -932,6 +962,9 @@ public class Main extends javax.swing.JFrame {
 		jchkBoxFirmaInvisible = new javax.swing.JCheckBox();
 		jbtnFirmar = new javax.swing.JButton();
 		jbtnRestablecerFirmar = new javax.swing.JButton();
+		btnCerrar = new javax.swing.JButton();
+		btnCerrar1 = new javax.swing.JButton();
+		btnCerrar2 = new javax.swing.JButton();
 		jplVerificarDocumento = new javax.swing.JPanel();
 		jplDocumentoVerificar = new javax.swing.JPanel();
 		jlbArchivoFirmadoVerficar = new javax.swing.JLabel();
@@ -999,6 +1032,8 @@ public class Main extends javax.swing.JFrame {
 		jtxtFirmarRuta.setEnabled(false);
 
 		jbtnFirmarExaminarCertificado.setText("Examinar");
+		jbtnFirmarExaminarCertificado.setIcon(IconFontSwing.buildIcon(FontAwesome.SEARCH, 16, color));
+
 		jbtnFirmarExaminarCertificado.setEnabled(false);
 		jbtnFirmarExaminarCertificado.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1065,7 +1100,7 @@ public class Main extends javax.swing.JFrame {
 
 		jplDocumentos.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-		jlblDocumentosFirmar.setText("<html><b>0 DOCUMENTO(S) SELECCIONADO(S)</b></html>");
+		jlblDocumentosFirmar.setText("0 DOCUMENTO(S) SELECCIONADO(S)");
 
 		jtblFirmarDocumentos.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
@@ -1079,6 +1114,7 @@ public class Main extends javax.swing.JFrame {
 		jScrollPaneFirmarDocumentos.setViewportView(jtblFirmarDocumentos);
 
 		jbtnFirmarExaminarDocumentos.setText("Examinar");
+		jbtnFirmarExaminarDocumentos.setIcon(IconFontSwing.buildIcon(FontAwesome.SEARCH, 16, color));
 		jbtnFirmarExaminarDocumentos.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jbtnFirmarExaminarDocumentosActionPerformed(evt);
@@ -1086,6 +1122,7 @@ public class Main extends javax.swing.JFrame {
 		});
 
 		jbtnFirmarEliminarDocumentos.setText("Eliminar");
+		jbtnFirmarEliminarDocumentos.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.REMOVE, 16, color));
 		jbtnFirmarEliminarDocumentos.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jbtnFirmarEliminarDocumentosActionPerformed(evt);
@@ -1127,6 +1164,7 @@ public class Main extends javax.swing.JFrame {
 						.addContainerGap()));
 
 		jbtnFirmar.setText("Firmar");
+		jbtnFirmar.setIcon(IconFontSwing.buildIcon(FontAwesome.PENCIL, 16, color));
 		jbtnFirmar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jbtnFirmarActionPerformed(evt);
@@ -1134,9 +1172,34 @@ public class Main extends javax.swing.JFrame {
 		});
 
 		jbtnRestablecerFirmar.setText("Restablecer");
+		jbtnRestablecerFirmar.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.RESTORE, 16, color));
 		jbtnRestablecerFirmar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jbtnRestablecerFirmarActionPerformed(evt);
+			}
+		});
+
+		btnCerrar.setText("Cerrar");
+		btnCerrar.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.CLOSE, 16, color));
+		btnCerrar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				setVisible(false);
+			}
+		});
+
+		btnCerrar1.setText("Cerrar");
+		btnCerrar1.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.CLOSE, 16, color));
+		btnCerrar1.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				setVisible(false);
+			}
+		});
+
+		btnCerrar2.setText("Cerrar");
+		btnCerrar2.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.CLOSE, 16, color));
+		btnCerrar2.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				setVisible(false);
 			}
 		});
 
@@ -1144,10 +1207,12 @@ public class Main extends javax.swing.JFrame {
 		jplFirmarDocumento.setLayout(jplFirmarDocumentoLayout);
 		jplFirmarDocumentoLayout.setHorizontalGroup(jplFirmarDocumentoLayout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jplFirmarDocumentoLayout.createSequentialGroup()
-						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(jbtnFirmar)
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(jbtnRestablecerFirmar).addContainerGap())
+				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+						jplFirmarDocumentoLayout.createSequentialGroup().addContainerGap().addComponent(btnCerrar)
+								.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(jbtnFirmar)
+								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(jbtnRestablecerFirmar).addContainerGap())
 				.addGroup(jplFirmarDocumentoLayout.createSequentialGroup().addContainerGap()
 						.addGroup(jplFirmarDocumentoLayout
 								.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1160,21 +1225,27 @@ public class Main extends javax.swing.JFrame {
 										.addComponent(jplCertificadoFirmar, javax.swing.GroupLayout.DEFAULT_SIZE,
 												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addContainerGap()))));
-		jplFirmarDocumentoLayout.setVerticalGroup(
-				jplFirmarDocumentoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(jplFirmarDocumentoLayout.createSequentialGroup().addContainerGap()
-								.addComponent(jplCertificadoFirmar, javax.swing.GroupLayout.PREFERRED_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jplDocumentos, javax.swing.GroupLayout.DEFAULT_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(jplFirmarDocumentoLayout
-										.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-										.addComponent(jbtnFirmar).addComponent(jbtnRestablecerFirmar))
-								.addContainerGap()));
+		jplFirmarDocumentoLayout.setVerticalGroup(jplFirmarDocumentoLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(jplFirmarDocumentoLayout.createSequentialGroup().addContainerGap()
+						.addComponent(jplCertificadoFirmar, javax.swing.GroupLayout.PREFERRED_SIZE,
+								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(jplDocumentos, javax.swing.GroupLayout.DEFAULT_SIZE,
+								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(jplFirmarDocumentoLayout
+								.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE).addComponent(btnCerrar)
+								.addComponent(jbtnFirmar).addComponent(jbtnRestablecerFirmar))
+						.addContainerGap()));
 
-		mainPanel.addTab("<html>Firmar documento(<u>1</u>)</html>", jplFirmarDocumento);
+		JLabel lbl0 = new JLabel("Firmar");
+		lbl0.setIcon(IconFontSwing.buildIcon(FontAwesome.PENCIL, 16, color));
+		lbl0.setIconTextGap(5);
+		lbl0.setHorizontalTextPosition(SwingConstants.RIGHT);
+
+		mainPanel.addTab("Firmar", jplFirmarDocumento);
+		mainPanel.setTabComponentAt(0, lbl0);
 
 		jplDocumentoVerificar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		jplDocumentoVerificar.setPreferredSize(new java.awt.Dimension(454, 71));
@@ -1211,8 +1282,7 @@ public class Main extends javax.swing.JFrame {
 
 		jplVerificacion.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-		jlblResultadoVerificacion
-				.setText("<html><b>RESULTADOS DE LA VERIFICACIÓN DEL ARCHIVO FIRMADO ELECTRÓNICAMENTE</b></html>");
+		jlblResultadoVerificacion.setText("RESULTADOS DE LA VERIFICACIÓN DEL ARCHIVO FIRMADO ELECTRÓNICAMENTE");
 
 		jtblVerificarDatosFirmante.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
@@ -1247,6 +1317,7 @@ public class Main extends javax.swing.JFrame {
 								.addContainerGap()));
 
 		jbtnRestablecerVerificar.setText("Restablecer");
+		jbtnRestablecerVerificar.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.RESTORE, 16, color));
 		jbtnRestablecerVerificar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jbtnRestablecerVerificarActionPerformed(evt);
@@ -1274,9 +1345,10 @@ public class Main extends javax.swing.JFrame {
 												Short.MAX_VALUE))
 								.addGap(8, 8, 8))
 						.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-								jplVerificarDocumentoLayout.createSequentialGroup()
+								jplVerificarDocumentoLayout.createSequentialGroup().addContainerGap()
+										.addComponent(btnCerrar1)
 										.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(jbtnVerificar)
+										.addContainerGap().addComponent(jbtnVerificar)
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(jbtnRestablecerVerificar).addContainerGap()));
 		jplVerificarDocumentoLayout.setVerticalGroup(
@@ -1290,10 +1362,17 @@ public class Main extends javax.swing.JFrame {
 								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 								.addGroup(jplVerificarDocumentoLayout
 										.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-										.addComponent(jbtnRestablecerVerificar).addComponent(jbtnVerificar))
+										.addComponent(btnCerrar1).addComponent(jbtnRestablecerVerificar)
+										.addComponent(jbtnVerificar))
 								.addContainerGap()));
 
-		mainPanel.addTab("<html><b>VERIFICAR DOCUMENTO </b>(<u>2</u>)</html>", jplVerificarDocumento);
+		JLabel lbl1 = new JLabel("Verificar");
+		lbl1.setIcon(IconFontSwing.buildIcon(FontAwesome.CHECK, 16, color));
+		lbl1.setIconTextGap(5);
+		lbl1.setHorizontalTextPosition(SwingConstants.RIGHT);
+
+		mainPanel.addTab("Verificar", jplVerificarDocumento);
+		mainPanel.setTabComponentAt(1, lbl1);
 
 		jplValidarCertificado.setName(""); // NOI18N
 
@@ -1387,7 +1466,7 @@ public class Main extends javax.swing.JFrame {
 
 		jplValidacion.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-		jlblResultadoValidacion.setText("<html><b>RESULTADOS DE VERIFICACIÓN DE CERTIFICADO ELECTRÓNICO</b></html>");
+		jlblResultadoValidacion.setText("RESULTADOS DE VERIFICACIÓN DE CERTIFICADO ELECTRÓNICO");
 
 		jtblValidarDatosCertificados.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
@@ -1425,6 +1504,7 @@ public class Main extends javax.swing.JFrame {
 
 		jbtnValidarRestablecer.setMnemonic('r');
 		jbtnValidarRestablecer.setText("Restablecer");
+		jbtnValidarRestablecer.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.RESTORE, 16, color));
 		jbtnValidarRestablecer.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jbtnValidarRestablecerActionPerformed(evt);
@@ -1454,26 +1534,34 @@ public class Main extends javax.swing.JFrame {
 												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addGap(8, 8, 8))
 						.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-								jplValidarCertificadoLayout.createSequentialGroup()
+								jplValidarCertificadoLayout.createSequentialGroup().addContainerGap()
+										.addComponent(btnCerrar2)
 										.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(jbtnValidar)
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(jbtnValidarRestablecer).addContainerGap()));
-		jplValidarCertificadoLayout.setVerticalGroup(jplValidarCertificadoLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(jplValidarCertificadoLayout.createSequentialGroup().addContainerGap()
-						.addComponent(jplCertificadoValidar, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(jplValidacion, javax.swing.GroupLayout.DEFAULT_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-						.addGroup(jplValidarCertificadoLayout
-								.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-								.addComponent(jbtnValidarRestablecer).addComponent(jbtnValidar))
-						.addContainerGap()));
+		jplValidarCertificadoLayout.setVerticalGroup(
+				jplValidarCertificadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(jplValidarCertificadoLayout.createSequentialGroup().addContainerGap()
+								.addComponent(jplCertificadoValidar, javax.swing.GroupLayout.PREFERRED_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(jplValidacion, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								.addGroup(jplValidarCertificadoLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+										.addComponent(btnCerrar2).addComponent(jbtnValidarRestablecer)
+										.addComponent(jbtnValidar))
+								.addContainerGap()));
 
-		mainPanel.addTab("<html><b>VALIDAR CERTIFICADO </b>(<u>3</u>)</html>", jplValidarCertificado);
+		JLabel lbl = new JLabel("Validar cert");
+		lbl.setIcon(IconFontSwing.buildIcon(FontAwesome.CERTIFICATE, 16, color));
+		lbl.setIconTextGap(5);
+		lbl.setHorizontalTextPosition(SwingConstants.RIGHT);
+
+		mainPanel.addTab("Validar cert.(3)", jplValidarCertificado);
+		mainPanel.setTabComponentAt(2, lbl);
 
 		jScrollPane1.setViewportView(mainPanel);
 		mainPanel.getAccessibleContext().setAccessibleParent(this);
@@ -1488,14 +1576,21 @@ public class Main extends javax.swing.JFrame {
 		miPredeterminar.setText("Registrar");
 		miPredeterminar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+				String os = System.getProperty("os.name");
+
+				if (os.equalsIgnoreCase("Linux")) {
+					JOptionPane.showMessageDialog(null, "Ejecute librefirma con sudo o privilegios para registrar.");
+				}
+
 				URISchemeHandler urlHandler = new URISchemeHandler();
 				String schemeName = "librefirma";
 				try {
-					urlHandler.register(schemeName, "firmador.bat");
+					urlHandler.register(schemeName, "librefirma");
 				} catch (CouldNotRegisterUriSchemeHandler e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+
 			}
 		});
 		jmConfiguracion.add(miPredeterminar);
@@ -1721,7 +1816,7 @@ public class Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_jbtnValidarRestablecerActionPerformed
 
 	private void jbtnValidarExaminarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbtnValidarExaminarActionPerformed
-		jtxtValidarRuta.setText(FileUtils.rutaFichero(filtroCertificados));
+		jtxtValidarRuta.setText(new com.github.klascano.librefirma.utils.Utils().rutaFichero(filtroCertificados, this));
 	}// GEN-LAST:event_jbtnValidarExaminarActionPerformed
 
 	private void jrbValidarTokenActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jrbValidarTokenActionPerformed
@@ -1789,7 +1884,7 @@ public class Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_jbtnRestablecerVerificarActionPerformed
 
 	private void jbtnVerificarExaminarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbtnVerificarExaminarActionPerformed
-		jtxtVerificarRuta.setText(FileUtils.rutaFichero(filtroDocumentos));
+		jtxtVerificarRuta.setText(new com.github.klascano.librefirma.utils.Utils().rutaFichero(filtroDocumentos, this));
 	}// GEN-LAST:event_jbtnVerificarExaminarActionPerformed
 
 	private void jbtnRestablecerFirmarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbtnRestablecerFirmarActionPerformed
@@ -1815,7 +1910,7 @@ public class Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_jbtnFirmarActionPerformed
 
 	private void jbtnFirmarExaminarCertificadoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbtnFirmarExaminarCertificadoActionPerformed
-		jtxtFirmarRuta.setText(FileUtils.rutaFichero(filtroCertificados));
+		jtxtFirmarRuta.setText(new com.github.klascano.librefirma.utils.Utils().rutaFichero(filtroCertificados, this));
 	}// GEN-LAST:event_jbtnFirmarExaminarCertificadoActionPerformed
 
 	private void jrbFirmarTokenActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jrbFirmarTokenActionPerformed
@@ -1842,8 +1937,9 @@ public class Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_jbtnFirmarEliminarDocumentosActionPerformed
 
 	private void jbtnFirmarExaminarDocumentosActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbtnFirmarExaminarDocumentosActionPerformed
+
 		try {
-			agregarDocumentos(FileUtils.rutaFicheros(filtroDocumentos));
+			agregarDocumentos(new com.github.klascano.librefirma.utils.Utils().rutaFicheros(filtroDocumentos, this));
 		} catch (Exception ex) {
 			Logger.getLogger(jPanelVariosDocumentos.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -1975,6 +2071,9 @@ public class Main extends javax.swing.JFrame {
 	private javax.swing.JButton jbtnFirmarExaminarCertificado;
 	private javax.swing.JButton jbtnFirmarExaminarDocumentos;
 	private javax.swing.JButton jbtnRestablecerFirmar;
+	private javax.swing.JButton btnCerrar;
+	private javax.swing.JButton btnCerrar1;
+	private javax.swing.JButton btnCerrar2;
 	private javax.swing.JButton jbtnRestablecerVerificar;
 	private javax.swing.JButton jbtnValidar;
 	private javax.swing.JButton jbtnValidarExaminar;

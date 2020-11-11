@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<shortcuts>
+    <skipIfNotSupported/>
+    <programGroup defaultName="librefirma" location="applications"/>
+    <shortcut applications="yes" workingDirectory="$INSTALL_PATH/librefirma/bin/"
+        description="Firmador electronico libre"
+        desktop="yes" iconFile="$INSTALL_PATH/librefirma/librefirma.ico"
+        iconIndex="0" initialState="normal"
+        name="Librefirma" programGroup="yes"
+        startMenu="yes" startup="no" target="$INSTALL_PATH/librefirma/bin/librefirma.bat"/>
+
+    <shortcut applications="yes" workingDirectory="$INSTALL_PATH/librefirma/bin/"
+        description="Firmador electronico libre"
+        desktop="no" iconFile="$INSTALL_PATH/librefirma/librefirma.ico"
+        iconIndex="0" initialState="normal"
+        name="Librefirma consola" programGroup="yes"
+        startMenu="yes" startup="no" target="$INSTALL_PATH/librefirma/bin/librefirma_console.bat"/>
+
+
+</shortcuts>
