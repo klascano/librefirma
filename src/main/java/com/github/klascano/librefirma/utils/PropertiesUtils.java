@@ -15,131 +15,128 @@
 package com.github.klascano.librefirma.utils;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.klascano.librefirma.firmador.Main;
 
-/**
- *
- * @author mfernandez
- */
 public class PropertiesUtils {
 
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
-    private static Properties path;
-    private static final String NAME_PROPERTIES = "/firmadigital.properties";
-    private static final String DIRECTORY = System.getProperty("user.home");
-    private static final String MESSAGES = "messages.firmador.properties";
-    private static final String CONFIG = "config.firmador.properties";
-    private static Properties messages;
-    private static Properties config;
+	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+	private static Properties path;
+	private static final String NAME_PROPERTIES = "/settings.properties";
+	private static final String DIRECTORY = Paths.get(".").toAbsolutePath().normalize().toString();
+	private static final String MESSAGES = "messages.firmador.properties";
+	private static final String CONFIG = "config.firmador.properties";
+	private static Properties messages;
+	private static Properties config;
 
-    public static Properties getMessages() {
-        messages = new Properties();
-        try {
-            messages.load(PropertiesUtils.class.getClassLoader().getResourceAsStream(MESSAGES));
-        } catch (IOException ex) {
-            Logger.getLogger(PropertiesUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return messages;
-    }
+	public static Properties getMessages() {
+		messages = new Properties();
+		try {
+			messages.load(PropertiesUtils.class.getClassLoader().getResourceAsStream(MESSAGES));
+		} catch (IOException ex) {
+			Logger.getLogger(PropertiesUtils.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return messages;
+	}
 
-    public static Properties getConfig() {
-        config = new Properties();
-        try {
-            config.load(PropertiesUtils.class.getClassLoader().getResourceAsStream(CONFIG));
-        } catch (IOException ex) {
-            Logger.getLogger(PropertiesUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return config;
-    }
+	public static Properties getConfig() {
+		config = new Properties();
+		try {
+			config.load(PropertiesUtils.class.getClassLoader().getResourceAsStream(CONFIG));
+		} catch (IOException ex) {
+			Logger.getLogger(PropertiesUtils.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return config;
+	}
 
-    public static Properties getPath() {
-        path = loadLastConfig();
-        if (path.isEmpty()) {
-            createLastConfig();
-            LOGGER.info("Creating configuration file in: " + DIRECTORY);
-        }
-        return path;
-    }
+	public static Properties getPath() {
+		path = loadLastConfig();
+		if (path.isEmpty()) {
+			createLastConfig();
+			LOGGER.info("Creating configuration file in: " + DIRECTORY);
+		}
+		return path;
+	}
 
-    public static String getDirectory() {
-        return DIRECTORY;
-    }
+	public static String getDirectory() {
+		return DIRECTORY;
+	}
 
-    public static Properties loadLastConfig() {
-        Properties propTemp = new Properties();
-        LOGGER.info("Base directory: " + DIRECTORY);
-        InputStream input = null;
-        try {
-            input = new FileInputStream(DIRECTORY + NAME_PROPERTIES);
-            // load a properties file
-            propTemp.load(input);
-        } catch (IOException ex) {
-            LOGGER.severe("Reading file error: " + DIRECTORY + " " + ex.getMessage());
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    LOGGER.severe("Error on close file: " + e.getMessage());
-                }
-            }
-        }
-        return propTemp;
-    }
+	public static Properties loadLastConfig() {
+		Properties propTemp = new Properties();
+		LOGGER.info("Base directory: " + DIRECTORY);
+		InputStream input = null;
+		try {
+			input = new FileInputStream(DIRECTORY + NAME_PROPERTIES);
+			// load a properties file
+			propTemp.load(input);
+		} catch (IOException ex) {
+			LOGGER.severe("Reading file error: " + DIRECTORY + " " + ex.getMessage());
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					LOGGER.severe("Error on close file: " + e.getMessage());
+				}
+			}
+		}
+		return propTemp;
+	}
 
-    public static void createLastConfig() {
-        Properties propTemp = new Properties();
-        OutputStream output = null;
-        try {
-            output = new FileOutputStream(DIRECTORY + NAME_PROPERTIES);
-            propTemp.store(output, "Temporal configurations");
-            LOGGER.info("Creating temporal config file in: " + DIRECTORY);
-        } catch (IOException io) {
-            LOGGER.severe("Write to file error: +" + io.getMessage());
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+	public static void createLastConfig() {
+		Properties propTemp = new Properties();
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream(DIRECTORY + NAME_PROPERTIES);
+			propTemp.store(output, "Temporal configurations");
+			LOGGER.info("Creating temporal config file in: " + DIRECTORY);
+		} catch (IOException io) {
+			LOGGER.severe("Write to file error: +" + io.getMessage());
+		} finally {
+			if (output != null) {
+				try {
+					output.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 
-        }
-    }
+		}
+	}
 
-    public static void updateLastConfig(String pathTemp) {
-        Properties propTemp = new Properties();
-        propTemp.setProperty("user.home", pathTemp);
+	public static void updateLastConfig(String pathTemp) {
+		Properties propTemp = new Properties();
+		propTemp.setProperty("user.home", pathTemp);
 
-        OutputStream output = null;
-        try {
-            output = new FileOutputStream(DIRECTORY + NAME_PROPERTIES);
-            propTemp.store(output, "Temporal configurations");
-            LOGGER.info("Updating temporal config file in: " + DIRECTORY);
-        } catch (IOException io) {
-            LOGGER.severe("Write to file error: +" + io.getMessage());
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream(DIRECTORY + NAME_PROPERTIES);
+			propTemp.store(output, "Temporal configurations");
+			LOGGER.info("Updating temporal config file in: " + DIRECTORY);
+		} catch (IOException io) {
+			LOGGER.severe("Write to file error: +" + io.getMessage());
+		} finally {
+			if (output != null) {
+				try {
+					output.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
-    public static File loadLastCertFile() {
-        return new File(path.getProperty("user.home"));
-    }
+	public static File loadLastCertFile() {
+		return new File(path.getProperty("user.home"));
+	}
 }

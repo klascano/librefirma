@@ -6,6 +6,7 @@
 package com.github.klascano.librefirma.utils;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
@@ -17,7 +18,8 @@ import java.util.logging.SimpleFormatter;
  */
 public class Log {
 
-	private static final String LOG_FILE_PATTERN = "bitacora.log";
+	private static final String LOG_FILE_PATTERN = Paths.get(".").toAbsolutePath().normalize().toString()
+			+ "/bitacora.log";
 
 	public static void initLogging() {
 		try {

@@ -22,6 +22,11 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 
+import com.github.klascano.librefirma.firmador.Main;
+
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
+
 public class TextFieldTransferHandlerComponent extends TransferHandler {
 
 	/**
@@ -79,9 +84,10 @@ public class TextFieldTransferHandlerComponent extends TransferHandler {
 			String nombreComponente) {
 		String message = "Arrastre su " + (nombreComponente == null ? "archivo" : nombreComponente)
 				+ " a este campo (Drag&Drop)";
-		int width = 15, height = 15;
-		Icon icon = new ImageIcon(new ImageIcon(ClassLoader.getSystemResource("images/info.png")).getImage()
-				.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT));
+		int width = 16, height = 16;
+
+		Icon icon = (ImageIcon) IconFontSwing.buildIcon(GoogleMaterialDesignIcons.INFO, 16, Main.color);
+
 		JLabel lb = new JLabel(icon);
 		lb.setBounds(jTextField.getBounds().x - width, jTextField.getBounds().y, width, height);
 		lb.addMouseListener(new MouseAdapter() {

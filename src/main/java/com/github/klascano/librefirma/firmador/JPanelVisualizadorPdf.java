@@ -41,6 +41,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
+
 public final class JPanelVisualizadorPdf extends javax.swing.JPanel {
 
 	/**
@@ -160,9 +163,11 @@ public final class JPanelVisualizadorPdf extends javax.swing.JPanel {
 							&& (e.getPoint().y < iconImage.getIconHeight() - tmpSignatureHeight)) {
 						javax.swing.JButton jbtnAceptar = new javax.swing.JButton();
 						jbtnAceptar.setText("Aceptar");
+						jbtnAceptar.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.CHECK, 16, Main.color));
 						jbtnAceptar.setMnemonic(java.awt.event.KeyEvent.VK_A);
 						javax.swing.JButton jbtnCancelar = new javax.swing.JButton();
 						jbtnCancelar.setText("Cancelar");
+						jbtnCancelar.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.CLOSE, 16, Main.color));
 						jbtnCancelar.setMnemonic(java.awt.event.KeyEvent.VK_C);
 						Object[] options = { jbtnAceptar, jbtnCancelar };
 						jbtnAceptar.addActionListener((java.awt.event.ActionEvent evt) -> {
@@ -364,7 +369,7 @@ public final class JPanelVisualizadorPdf extends javax.swing.JPanel {
 		jtaRuta.setColumns(20);
 		jScrollPane1.setViewportView(jtaRuta);
 
-		jlblRuta.setText("<html>Ruta del<br>documento</html>");
+		jlblRuta.setText("Documento");
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 		this.setLayout(layout);

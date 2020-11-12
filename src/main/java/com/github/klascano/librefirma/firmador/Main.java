@@ -27,7 +27,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -145,7 +148,10 @@ public class Main extends javax.swing.JFrame {
 	private final JButton btnNo = new JButton();
 	private final JButton btnAceptar = new JButton();
 
-	static Color color = new Color(21, 127, 204);
+	public static Color color = new Color(21, 127, 204);
+	public String downUrl = "";
+	public String tmpFile = "";
+	public File archivoUrl = null;
 
 	/**
 	 * Creates new form Main
@@ -153,6 +159,7 @@ public class Main extends javax.swing.JFrame {
 	 * @param args
 	 */
 	public Main(String[] args) {
+
 		initComponents();
 		inicializarTabla();
 		mnemonic();
@@ -160,6 +167,22 @@ public class Main extends javax.swing.JFrame {
 		eventos();
 		dragAndDrop();
 		setTitle("LibreFirma " + version);
+
+		java.util.List<String> files = new java.util.ArrayList<>();
+		if (args != null && args[0].trim().length() > 0) {
+			try {
+				this.downUrl = java.net.URLDecoder.decode(args[0], StandardCharsets.UTF_8.name());
+
+				this.archivoUrl = URLReader.copyURLToFile(new URL(this.downUrl));
+
+				files.add(this.archivoUrl.getAbsolutePath());
+				agregarDocumentos(files);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private void mnemonic() {
@@ -658,7 +681,8 @@ public class Main extends javax.swing.JFrame {
 									jPanelVariosDocumentos jPanelVariosDocumentos = new jPanelVariosDocumentos(
 											documentosFirmados);
 									javax.swing.JButton btnSalir = new javax.swing.JButton();
-									btnSalir.setText("Salir");
+									btnSalir.setText("Cerrar");
+
 									btnSalir.setMnemonic(java.awt.event.KeyEvent.VK_S);
 									Object[] options = { btnSalir };
 									btnSalir.addActionListener((java.awt.event.ActionEvent evt1) -> {
@@ -1031,7 +1055,6 @@ public class Main extends javax.swing.JFrame {
 		jtxtFirmarRuta.setEditable(false);
 		jtxtFirmarRuta.setEnabled(false);
 
-		jbtnFirmarExaminarCertificado.setText("Examinar");
 		jbtnFirmarExaminarCertificado.setIcon(IconFontSwing.buildIcon(FontAwesome.SEARCH, 16, color));
 
 		jbtnFirmarExaminarCertificado.setEnabled(false);
@@ -1939,7 +1962,9 @@ public class Main extends javax.swing.JFrame {
 	private void jbtnFirmarExaminarDocumentosActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbtnFirmarExaminarDocumentosActionPerformed
 
 		try {
+
 			agregarDocumentos(new com.github.klascano.librefirma.utils.Utils().rutaFicheros(filtroDocumentos, this));
+
 		} catch (Exception ex) {
 			Logger.getLogger(jPanelVariosDocumentos.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -1952,6 +1977,7 @@ public class Main extends javax.swing.JFrame {
 			JPanelVisualizadorPdf jPanelVisualizadorPdf = new JPanelVisualizadorPdf(documento, 70, 153, 50);
 			JButton btnEstampar = new JButton();
 			btnEstampar.setText("Estampar");
+			btnEstampar.setIcon(IconFontSwing.buildIcon(FontAwesome.PENCIL, 16, color));
 			btnEstampar.setMnemonic(KeyEvent.VK_A);
 			Object[] options = { btnEstampar };
 			btnEstampar.addActionListener((java.awt.event.ActionEvent evt) -> {
@@ -1967,8 +1993,7 @@ public class Main extends javax.swing.JFrame {
 					Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			});
-			JOptionPane.showOptionDialog(getParent(), jPanelVisualizadorPdf,
-					"Visualizador PDF para estampado de firma en formato A4", JOptionPane.OK_OPTION,
+			JOptionPane.showOptionDialog(getParent(), jPanelVisualizadorPdf, "Visualizador", JOptionPane.OK_OPTION,
 					JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 		} catch (HeadlessException e) {
 			LOGGER.log(Level.SEVERE, messages.getProperty("mensaje.error.documento_problemas") + "\n" + documento, e);
@@ -1987,6 +2012,32 @@ public class Main extends javax.swing.JFrame {
 	 * @param args the command line arguments
 	 */
 	public static void main(String args[]) {
+
+		boolean tema = true;
+		String url = "";
+		String[] params = { "" };
+
+		if (args != null) {
+
+			System.out.println("Program Arguments:");
+			for (String arg : args) {
+
+				if (arg.equalsIgnoreCase("notema")) {
+					tema = false;
+				}
+
+				if (arg.contains("librefirma://")) {
+					url = arg.replace("librefirma://", "");
+					params[0] = url;
+				}
+
+				LOGGER.log(Level.INFO, "arg:" + arg);
+			}
+
+		}
+
+		LOGGER.log(Level.INFO, "current path:" + Paths.get(".").toAbsolutePath().normalize().toString());
+
 		Log.initLogging();
 		cargarPropiedades();
 		Update update = new Update();
@@ -2007,8 +2058,23 @@ public class Main extends javax.swing.JFrame {
 				System.exit(1);
 			}
 		} else {
+
 			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				if (tema == true) {
+					LOGGER.log(Level.INFO, "tema del sistema");
+
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+					for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
+							.getInstalledLookAndFeels()) {
+						if ("com.sun.java.swing.plaf.gtk.GTKLookAndFeel".equals(info.getClassName())) {
+							UIManager.setLookAndFeel(info.getClassName());
+						}
+					}
+				} else {
+					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+				}
+
 				UIManager.put("swing.boldMetal", Boolean.FALSE);
 			} catch (ClassNotFoundException ex) {
 				java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -2024,7 +2090,7 @@ public class Main extends javax.swing.JFrame {
 			version = PropertiesUtils.getConfig().getProperty("version");
 			/* Create and display the form */
 			java.awt.EventQueue.invokeLater(() -> {
-				new Main(null).setVisible(true);
+				new Main(params).setVisible(true);
 			});
 			// update(version);
 			LOGGER.log(Level.INFO, "Firmador: {0} JRE: {1} Sistema Operativo: {2}",

@@ -29,6 +29,8 @@ dependencies {
     implementation 'com.github.jiconfont:jiconfont-swing:1.0.1'
     implementation 'com.github.jiconfont:jiconfont-font_awesome:4.7.0.1'
     implementation 'com.github.jiconfont:jiconfont-google_material_design_icons:2.2.0.2'
+        implementation 'org.apache.commons:commons-io:1.3.2'   
+    implementation 'org.apache.commons:commons-lang3:3.1'
 
     izpack 'org.codehaus.izpack:izpack-ant:5.1.3'
     implementation 'com.bmuschko:gradle-izpack-plugin:3.0'
